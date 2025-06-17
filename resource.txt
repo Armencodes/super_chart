@@ -1,0 +1,146 @@
+1. generate a python sample how to use streamlit
+
+import streamlit as st
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Set page title and layout
+st.set_page_config(page_title="Sample Streamlit App", layout="centered")
+
+# Title
+st.title("📈 Simple Streamlit Demo")
+
+# Input text
+user_name = st.text_input("Enter your name:")
+
+# Button
+if st.button("Greet Me"):
+    st.success(f"Hello, {user_name}! 👋")
+
+# Slider for number selection
+num = st.slider("Select number of points", min_value=10, max_value=200, value=50)
+
+# Generate random data
+data = pd.DataFrame({
+    "x": np.arange(num),
+    "y": np.random.randn(num).cumsum()
+})
+
+# Display line chart using Matplotlib
+st.subheader("Line Chart of Random Data")
+fig, ax = plt.subplots()
+ax.plot(data["x"], data["y"], color="purple", linewidth=2)
+ax.set_xlabel("Index")
+ax.set_ylabel("Value")
+st.pyplot(fig)
+
+
+2. display chart using yfinance library to show a AAPL prices
+
+import streamlit as st
+import yfinance as yf
+import plotly.graph_objects as go
+
+# Page setup
+st.set_page_config(page_title="AAPL Stock Chart", layout="wide")
+
+# Title
+st.title("📊 Apple Inc. (AAPL) Stock Price Chart")
+
+# Select time range
+range_option = st.selectbox("Select Time Range", ["1d", "5d", "1mo", "3mo", "6mo", "1y", "2y"])
+
+# Get data from yfinance
+ticker = yf.Ticker("AAPL")
+
+# Set interval based on range
+if range_option == "1d":
+    interval = "5m"
+elif range_option == "5d":
+    interval = "15m"
+elif range_option in ["1mo", "3mo"]:
+    interval = "1h"
+else:
+    interval = "1d"
+
+data = ticker.history(period=range_option, interval=interval)
+
+# Plot using Plotly
+if not data.empty:
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=data.index, 
+        y=data["Close"],
+        mode="lines",
+        line=dict(color="green", width=2),
+        name="Close Price"
+    ))
+    fig.update_layout(
+        title="AAPL Closing Prices",
+        xaxis_title="Date",
+        yaxis_title="Price (USD)",
+        height=500
+    )
+    st.plotly_chart(fig, use_container_width=True)
+else:
+    st.warning("No data available for the selected range.")
+
+3. create a left panel with a list of symbols
+
+import streamlit as st
+import yfinance as yf
+import plotly.graph_objects as go
+
+# Page setup
+st.set_page_config(page_title="Stock Chart Viewer", layout="wide")
+
+# --- Sidebar ---
+st.sidebar.title("📌 Stock Selector")
+
+# Symbol list for user to choose from
+default_symbols = ["AAPL", "MSFT", "GOOGL", "TSLA", "AMZN", "META", "NFLX"]
+selected_symbol = st.sidebar.selectbox("Choose a stock symbol:", default_symbols)
+
+# Time range selector
+range_option = st.sidebar.selectbox("Select Time Range", ["1d", "5d", "1mo", "3mo", "6mo", "1y", "2y"])
+
+# --- Main Content ---
+st.title(f"📊 {selected_symbol} Stock Price Chart")
+
+# Fetch data using yfinance
+ticker = yf.Ticker(selected_symbol)
+
+# Choose interval based on selected range
+if range_option == "1d":
+    interval = "5m"
+elif range_option == "5d":
+    interval = "15m"
+elif range_option in ["1mo", "3mo"]:
+    interval = "1h"
+else:
+    interval = "1d"
+
+# Load historical data
+data = ticker.history(period=range_option, interval=interval)
+
+# Plot using Plotly
+if not data.empty:
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=data.index, 
+        y=data["Close"],
+        mode="lines",
+        line=dict(color="#8000ff", width=2),
+        name="Close Price"
+    ))
+    fig.update_layout(
+        title=f"{selected_symbol} Closing Prices",
+        xaxis_title="Date",
+        yaxis_title="Price (USD)",
+        height=500
+    )
+    st.plotly_chart(fig, use_container_width=True)
+else:
+    st.warning("No data available for the selected range.")
+    
