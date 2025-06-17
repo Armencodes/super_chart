@@ -66,9 +66,8 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- File I/O ---
+# --- Watchlist
 WATCHLIST_FILE = "watchlist.csv"
-# EXPORT_FILE = f"export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
 
 def save_watchlist(symbols):
     df = pd.DataFrame(symbols, columns=["Symbol"])
@@ -79,11 +78,11 @@ def load_watchlist():
         return pd.read_csv(WATCHLIST_FILE)["Symbol"].tolist()
     except:
         return ["AAPL"]
-
+    
 # --- App State ---
 if "symbols" not in st.session_state:
     st.session_state.symbols = load_watchlist()
-if "selected_symbol" not in st.session_state:
+if "selected_symbol" not in st.session_state and len(st.session_state.symbols) > 0:
     st.session_state.selected_symbol = st.session_state.symbols[0]
 if "range" not in st.session_state:
     st.session_state.range = "1d"
@@ -192,5 +191,6 @@ if st.button("Export to CSV"):
         "Ask": info.get("ask", "N/A"),
         "Last Close": info.get("previousClose", "N/A")
     }])
-    export_df.to_csv(EXPORT_FILE, index=False)
-    st.success(f"Exported to {EXPORT_FILE}")
+    file_name = f"export_{symbol}.csv"
+    export_df.to_csv(file_name, index=False)
+    st.success(f"Exported to {file_name}")
