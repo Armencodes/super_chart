@@ -95,11 +95,9 @@ with st.sidebar:
     col1, col2, col3, col4 = st.columns(4)
     if col1.button("Add") and new_symbol and new_symbol not in st.session_state.symbols:
         st.session_state.symbols.append(new_symbol)
-        save_watchlist(st.session_state.symbols)
 
     if col2.button("Delete") and new_symbol in st.session_state.symbols:
         st.session_state.symbols.remove(new_symbol)
-        save_watchlist(st.session_state.symbols)
 
     if col3.button("Save"):
         save_watchlist(st.session_state.symbols)
